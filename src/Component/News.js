@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
-import NewsItem from './NewsItem'
+import React, { Component } from 'react';
+import NewsItem from './NewsItem';
 
 export class News extends Component {
-  articles= [
+  articles = [
 {
 "source": {
 "id": null,
@@ -1265,32 +1265,45 @@ export class News extends Component {
 "content": "Apple explore la possibilité d’acquérir Perplexity, une société spécialisée dans l’intelligence artificielle, selon Bloomberg. Ces discussions internes, encore à un stade préliminaire, visent à combl… [+2525 chars]"
 }
 ]
-  constructor(){
+  constructor() {
     super();
-    console.log("I am constructors");
-    this.state={
-      articles:this.articles,
-      loading:false
-    
+    console.log("I am constructor");
+    this.state = {
+      articles: this.articles,
+      loading: false
+    };
+  }
+
+  // ✅ async method outside constructor
+  async componentDidMount() {
+    console.log("cdm");
+    let url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=f9b6a344d9bf49729d30d0c1a7e51beb";
+
+    try {
+      let data = await fetch(url);
+      let parsedData = await data.json();
+      console.log(parsedData);
+      this.setState({ articles: parsedData.articles });
+    } catch (error) {
+      console.error("Fetch error:", error);
     }
   }
+
   render() {
     return (
       <div className="container my-3">
-        <h2>NewsHotDog - Top Heading</h2>
+        <h2>NewsHotDog - Top Headlines</h2>
         <div className="row">
-          {this.state.articles.map((element) => {
-            return (
-              <div className="col-md-4" key={element.url}>
-                <NewsItem
-                  title={element.title}
-                  description={element.description}
-                  imageUrl={element.urlToImage}
-                  newsUrl={element.url}
-                />
-              </div>
-            );
-          })}
+          {this.state.articles.map((element) => (
+            <div className="col-md-4" key={element.url}>
+              <NewsItem
+                title={element.title ? element.title.slice(0, 45) : ""}
+                description={element.description ? element.description.slice(0, 88) : ""}
+                imageUrl={element.urlToImage}
+                newsUrl={element.url}
+              />
+            </div>
+          ))}
         </div>
       </div>
     );
